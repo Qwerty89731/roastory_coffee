@@ -1,0 +1,182 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="description"
+        content="Roastory — кофе и свежая выпечка с доставкой"
+    >
+
+    <title>
+        {% block title %}
+            Roastory — кофе с историей
+        {% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/style.css' %}"
+    >
+
+    <script
+        defer
+        src="{% static 'js/main.js' %}"
+    ></script>
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container nav-wrap">
+
+            <a
+                class="brand"
+                href="{% url 'home' %}"
+            >
+                <span class="brand-mark">R</span>
+
+                <span>
+                    ROASTORY
+                    <small>coffee & bakery</small>
+                </span>
+            </a>
+
+            <button
+                class="nav-toggle"
+                type="button"
+                aria-label="Открыть меню"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+            <nav class="main-nav">
+                <a href="{% url 'menu' %}">
+                    Меню
+                </a>
+
+                <a href="{% url 'reviews' %}">
+                    Отзывы
+                </a>
+
+                <a href="{% url 'home' %}#delivery">
+                    Доставка
+                </a>
+
+                {% if user.is_authenticated %}
+                    <a
+                        class="bonus-pill"
+                        href="{% url 'profile' %}"
+                    >
+                        {{ user.profile.bonus_balance|default:"0" }}
+                        бонусов
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}">
+                        Войти
+                    </a>
+                {% endif %}
+
+                <a
+                    class="cart-link"
+                    href="{% url 'cart' %}"
+                >
+                    <span>Корзина</span>
+                    <b>{{ cart_count }}</b>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    {% if messages %}
+        <div class="messages container">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    <span>{{ message }}</span>
+
+                    <button
+                        type="button"
+                        aria-label="Закрыть"
+                    >
+                        ×
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+
+            <div>
+                <a
+                    class="brand brand-light"
+                    href="{% url 'home' %}"
+                >
+                    <span class="brand-mark">R</span>
+
+                    <span>
+                        ROASTORY
+                        <small>coffee & bakery</small>
+                    </span>
+                </a>
+
+                <p>
+                    Кофе, к которому хочется возвращаться.
+                </p>
+            </div>
+
+            <div>
+                <h3>Заглядывайте</h3>
+
+                <p>
+                    Москва, ул. Мира, 12<br>
+                    Ежедневно 08:00–22:00
+                </p>
+            </div>
+
+            <div>
+                <h3>Связаться</h3>
+
+                <p>
+                    <a href="tel:+74950000000">
+                        +7 495 000-00-00
+                    </a>
+
+                    <br>
+
+                    <a href="mailto:hello@roastory.coffee">
+                        hello@roastory.coffee
+                    </a>
+                </p>
+            </div>
+
+            <div>
+                <h3>Мы онлайн</h3>
+
+                <div class="socials">
+                    <a href="#">VK</a>
+                    <a href="#">TG</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="container footer-bottom">
+            <span>© 2026 Roastory</span>
+            <span>Политика конфиденциальности</span>
+        </div>
+    </footer>
+</body>
+</html>

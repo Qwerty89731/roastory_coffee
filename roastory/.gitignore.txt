@@ -1,0 +1,47 @@
+# Виртуальные окружения
+.venv/
+venv/
+env/
+ENV/
+
+# Python: кэш и скомпилированные файлы
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+*.log
+
+# Переменные окружения и секреты
+.env
+.env.*
+!.env.example
+
+# Тесты и отчёты о покрытии
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+
+# Сборка Python-пакетов
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Редакторы и IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+Desktop.ini
