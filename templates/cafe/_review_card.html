@@ -1,0 +1,52 @@
+<div class="review-card">
+
+    <div class="review-card__header">
+
+        <div class="review-card__user">
+
+            <div class="review-card__avatar">
+                {{ review.user.username|first|upper }}
+            </div>
+
+            <div class="review-card__info">
+
+                <div class="review-card__name">
+                    {{ review.user }}
+                </div>
+
+                <div class="review-card__verified">
+                    <span>✓</span>
+                    Проверенный гость
+                </div>
+
+                <div class="review-card__rating">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= review.rating %}
+                            <span class="star star--active">★</span>
+                        {% else %}
+                            <span class="star">☆</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="review-card__quote">“</div>
+
+    </div>
+
+    <p class="review-card__text">
+        {{ review.text }}
+    </p>
+
+    {% if review.created_at %}
+        <div class="review-card__footer">
+            <time datetime="{{ review.created_at|date:'Y-m-d' }}">
+                {{ review.created_at|date:"d.m.Y" }}
+            </time>
+        </div>
+    {% endif %}
+
+</div>

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Вход — Roastory
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+
+    <div class="auth-art">
+
+        <div>
+            <span class="kicker kicker-light">
+                Roastory club
+            </span>
+
+            <h1>
+                С возвращением
+            </h1>
+
+            <p>
+                Бонусы, история заказов и любимый
+                кофе — всё на месте.
+            </p>
+
+            <span class="auth-cup">
+                ☕
+            </span>
+        </div>
+
+    </div>
+
+    <div class="auth-panel">
+
+        <div class="auth-form">
+
+            <a
+                class="back-link"
+                href="{% url 'home' %}"
+            >
+                ← На главную
+            </a>
+
+            <span class="kicker">
+                Личный кабинет
+            </span>
+
+            <h2>
+                Войти
+            </h2>
+
+            <p>
+                Введите данные, указанные
+                при регистрации.
+            </p>
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="form-errors">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+                <div class="form-group">
+
+                    <label
+                        for="{{ form.username.id_for_label }}"
+                    >
+                        {{ form.username.label }}
+                    </label>
+
+                    {{ form.username }}
+                    {{ form.username.errors }}
+
+                </div>
+
+                <div class="form-group">
+
+                    <label
+                        for="{{ form.password.id_for_label }}"
+                    >
+                        {{ form.password.label }}
+                    </label>
+
+                    {{ form.password }}
+                    {{ form.password.errors }}
+
+                </div>
+
+                {% if next %}
+                    <input
+                        type="hidden"
+                        name="next"
+                        value="{{ next }}"
+                    >
+                {% endif %}
+
+                <button
+                    class="button button-primary button-full"
+                    type="submit"
+                >
+                    Войти →
+                </button>
+
+            </form>
+
+            <div class="auth-switch">
+
+                Ещё нет аккаунта?
+
+                <a href="{% url 'signup' %}">
+                    Зарегистрироваться
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

@@ -1,182 +1,217 @@
 {% load static %}
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
+      name="description"
+      content="Roastory — городская кофейня, спешелти-кофе и свежая выпечка с доставкой."
+    />
 
-    <meta
-        name="description"
-        content="Roastory — кофе и свежая выпечка с доставкой"
-    >
+    <meta name="theme-color" content="#173b32" />
 
-    <title>
-        {% block title %}
-            Roastory — кофе с историей
-        {% endblock %}
-    </title>
+    <title>{% block title %} Roastory — кофе с историей {% endblock %}</title>
 
-    <link
-        rel="stylesheet"
-        href="{% static 'css/style.css' %}"
-    >
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260814" />
 
-    <script
-        defer
-        src="{% static 'js/main.js' %}"
-    ></script>
-</head>
+    <script defer src="{% static 'js/main.js' %}"></script>
+  </head>
 
-<body>
+  <body>
+    <div class="announcement">
+      <div class="container announcement-inner">
+        <span>
+          <i></i>
+          Свежая обжарка каждую неделю
+        </span>
+
+        <span> Бесплатная доставка от 1 500 ₽ </span>
+      </div>
+    </div>
+
     <header class="site-header">
-        <div class="container nav-wrap">
+      <div class="container nav-wrap">
+        <a
+          class="brand"
+          href="{% url 'home' %}"
+          aria-label="Roastory — на главную"
+        >
+          <span class="brand-mark">R</span>
+
+          <span>
+            ROASTORY
+            <small>coffee & bakery</small>
+          </span>
+        </a>
+
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-label="Открыть меню"
+          aria-expanded="false"
+        >
+          ☰
+        </button>
+
+        <nav class="main-nav" aria-label="Основная навигация">
+          <a
+            class="nav-page-link{% if request.resolver_match.url_name == 'menu' %} active{% endif %}"
+            href="{% url 'menu' %}"
+          >
+            Меню
+          </a>
+
+          <a
+            class="nav-page-link{% if request.resolver_match.url_name == 'reviews' %} active{% endif %}"
+            href="{% url 'reviews' %}"
+          >
+            Отзывы
+          </a>
+
+          <a class="nav-page-link" href="{% url 'home' %}#about"> О нас </a>
+
+          <a class="nav-page-link" href="{% url 'home' %}#delivery">
+            Доставка
+          </a>
+
+          <div class="nav-account">
+            {% if user.is_authenticated %}
 
             <a
-                class="brand"
-                href="{% url 'home' %}"
+              class="nav-profile{% if request.resolver_match.url_name == 'profile' %} active{% endif %}"
+              href="{% url 'profile' %}"
             >
-                <span class="brand-mark">R</span>
+              <span class="nav-profile-icon" aria-hidden="true">
+                {{ user.first_name|default:user.username|first|upper }}
+              </span>
 
-                <span>
-                    ROASTORY
-                    <small>coffee & bakery</small>
-                </span>
+              <span>
+                <small>Личный кабинет</small>
+                {{ user.first_name|default:user.username }}
+              </span>
             </a>
 
-            <button
-                class="nav-toggle"
-                type="button"
-                aria-label="Открыть меню"
-                aria-expanded="false"
+            <form
+              class="nav-logout-form"
+              method="post"
+              action="{% url 'logout' %}"
             >
-                ☰
-            </button>
+              {% csrf_token %}
 
-            <nav class="main-nav">
-                <a href="{% url 'menu' %}">
-                    Меню
-                </a>
+              <button class="nav-logout" type="submit">Выйти</button>
+            </form>
 
-                <a href="{% url 'reviews' %}">
-                    Отзывы
-                </a>
+            {% else %}
 
-                <a href="{% url 'home' %}#delivery">
-                    Доставка
-                </a>
+            <a
+              class="nav-login{% if request.resolver_match.url_name == 'login' %} active{% endif %}"
+              href="{% url 'login' %}"
+            >
+              Войти
+            </a>
 
-                {% if user.is_authenticated %}
-                    <a
-                        class="bonus-pill"
-                        href="{% url 'profile' %}"
-                    >
-                        {{ user.profile.bonus_balance|default:"0" }}
-                        бонусов
-                    </a>
-                {% else %}
-                    <a href="{% url 'login' %}">
-                        Войти
-                    </a>
-                {% endif %}
+            <a
+              class="nav-signup{% if request.resolver_match.url_name == 'signup' %} active{% endif %}"
+              href="{% url 'signup' %}"
+            >
+              Регистрация
+            </a>
 
-                <a
-                    class="cart-link"
-                    href="{% url 'cart' %}"
-                >
-                    <span>Корзина</span>
-                    <b>{{ cart_count }}</b>
-                </a>
-            </nav>
-        </div>
+            {% endif %}
+          </div>
+
+          {% if user.is_authenticated %}
+
+          <a class="bonus-pill" href="{% url 'profile' %}">
+            ● {{ user.profile.bonus_balance }} бонусов
+          </a>
+
+          {% endif %}
+
+          <a class="cart-link" href="{% url 'cart' %}" aria-label="Корзина">
+            <span>Корзина</span>
+            <b>{{ cart_count }}</b>
+          </a>
+        </nav>
+      </div>
     </header>
 
     {% if messages %}
-        <div class="messages container">
-            {% for message in messages %}
-                <div class="message {{ message.tags }}">
-                    <span>{{ message }}</span>
 
-                    <button
-                        type="button"
-                        aria-label="Закрыть"
-                    >
-                        ×
-                    </button>
-                </div>
-            {% endfor %}
-        </div>
+    <div class="messages container">
+      {% for message in messages %}
+
+      <div class="message {{ message.tags }}">
+        {{ message }}
+
+        <button type="button" aria-label="Закрыть">×</button>
+      </div>
+
+      {% endfor %}
+    </div>
+
     {% endif %}
 
-    <main>
-        {% block content %}
-        {% endblock %}
-    </main>
+    <main>{% block content %} {% endblock %}</main>
 
     <footer class="site-footer">
-        <div class="container footer-grid">
+      <div class="container footer-grid">
+        <div>
+          <a class="brand brand-light" href="{% url 'home' %}">
+            <span class="brand-mark">R</span>
 
-            <div>
-                <a
-                    class="brand brand-light"
-                    href="{% url 'home' %}"
-                >
-                    <span class="brand-mark">R</span>
+            <span>
+              ROASTORY
+              <small>coffee & bakery</small>
+            </span>
+          </a>
 
-                    <span>
-                        ROASTORY
-                        <small>coffee & bakery</small>
-                    </span>
-                </a>
-
-                <p>
-                    Кофе, к которому хочется возвращаться.
-                </p>
-            </div>
-
-            <div>
-                <h3>Заглядывайте</h3>
-
-                <p>
-                    Москва, ул. Мира, 12<br>
-                    Ежедневно 08:00–22:00
-                </p>
-            </div>
-
-            <div>
-                <h3>Связаться</h3>
-
-                <p>
-                    <a href="tel:+74950000000">
-                        +7 495 000-00-00
-                    </a>
-
-                    <br>
-
-                    <a href="mailto:hello@roastory.coffee">
-                        hello@roastory.coffee
-                    </a>
-                </p>
-            </div>
-
-            <div>
-                <h3>Мы онлайн</h3>
-
-                <div class="socials">
-                    <a href="#">VK</a>
-                    <a href="#">TG</a>
-                </div>
-            </div>
+          <p>Кофе, к которому хочется возвращаться.</p>
         </div>
 
-        <div class="container footer-bottom">
-            <span>© 2026 Roastory</span>
-            <span>Политика конфиденциальности</span>
+        <div>
+          <h3>Заглядывайте</h3>
+
+          <p>
+            Москва, ул. Мира, 12
+            <br />
+            Ежедневно 08:00–22:00
+          </p>
         </div>
+
+        <div>
+          <h3>Связаться</h3>
+
+          <p>
+            <a href="tel:+74950000000"> +7 495 000-00-00 </a>
+
+            <br />
+
+            <a href="mailto:hello@roastory.coffee"> hello@roastory.coffee </a>
+          </p>
+        </div>
+
+        <div>
+          <h3>Мы онлайн</h3>
+
+          <div class="socials">
+            <a href="#" aria-label="Instagram"> ig </a>
+
+            <a href="#" aria-label="Telegram"> tg </a>
+
+            <a href="#" aria-label="TikTok"> tt </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="container footer-bottom">
+        <span> © 2026 Roastory </span>
+
+        <span> Политика конфиденциальности </span>
+      </div>
     </footer>
-</body>
+  </body>
 </html>

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="page-section">
+    <div class="container">
+
+        ```
+        <div class="checkout-success">
+
+            <h1>Заказ оформлен!</h1>
+
+            <p>
+                Спасибо за заказ.
+            </p>
+
+            <p>
+                Номер заказа:
+                <strong>№{{ order.pk }}</strong>
+            </p>
+
+            <p>
+                Способ получения:
+                <strong>{{ order.get_delivery_type_display }}</strong>
+            </p>
+
+            <p>
+                Способ оплаты:
+                <strong>{{ order.get_payment_method_display }}</strong>
+            </p>
+
+            <p>
+                Сумма заказа:
+                <strong>{{ order.total|floatformat:0 }} ₽</strong>
+            </p>
+
+            {% if order.delivery_type == "delivery" %}
+            <p>
+                Адрес доставки:
+                <strong>{{ order.address }}</strong>
+            </p>
+            {% else %}
+            <p>
+                Заказ можно забрать самостоятельно.
+            </p>
+            {% endif %}
+
+            <a href="{% url 'home' %}" class="button button-primary">
+                Вернуться на главную
+            </a>
+
+        </div>
+
+    </div>
+    ```
+
+</section>
+
+{% endblock %}

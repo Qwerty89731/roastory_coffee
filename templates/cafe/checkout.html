@@ -1,0 +1,872 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Оформление заказа — Roastory
+{% endblock %}
+
+
+{% block content %}
+
+<section class="page-hero compact">
+
+    <div class="container">
+
+        <span class="kicker">
+            Почти готово
+        </span>
+
+        <h1>
+            Оформление заказа
+        </h1>
+
+    </div>
+
+</section>
+
+
+<section class="section checkout-page">
+
+    <div class="container checkout-layout">
+
+        <form method="post" class="checkout-form" id="checkout-form">
+
+            {% csrf_token %}
+
+
+            {% if form.non_field_errors %}
+
+                <div class="form-errors">
+                    {{ form.non_field_errors }}
+                </div>
+
+            {% endif %}
+
+
+            <!-- ============================== -->
+            <!-- 01. СПОСОБ ПОЛУЧЕНИЯ -->
+            <!-- ============================== -->
+
+            <div class="checkout-block">
+
+                <span class="block-number">
+                    01
+                </span>
+
+                <div class="block-content">
+
+                    <h2>
+                        Как получить заказ?
+                    </h2>
+
+
+                    <div class="choice-cards">
+
+                        {% for radio in form.delivery_type %}
+
+                            <label class="choice-card">
+
+                                {{ radio.tag }}
+
+                                <span>
+
+                                    <strong>
+                                        {{ radio.choice_label }}
+                                    </strong>
+
+                                    <small>
+
+                                        {% if radio.choice_value == "delivery" %}
+                                            45–60 минут · от 0 ₽
+                                        {% elif radio.choice_value == "pickup" %}
+                                            ул. Мира, 12 · через 15 минут
+                                        {% endif %}
+
+                                    </small>
+
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
+                    </div>
+
+                    {{ form.delivery_type.errors }}
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ============================== -->
+            <!-- 02. КОНТАКТНЫЕ ДАННЫЕ -->
+            <!-- ============================== -->
+
+            <div class="checkout-block">
+
+                <span class="block-number">
+                    02
+                </span>
+
+                <div class="block-content">
+
+                    <h2>
+                        Контактные данные
+                    </h2>
+
+
+                    <div class="form-row">
+
+
+                        <!-- ИМЯ -->
+
+                        <div class="form-group">
+
+                            <label for="{{ form.customer_name.id_for_label }}">
+                                Имя
+                            </label>
+
+                            {{ form.customer_name }}
+
+                            {{ form.customer_name.errors }}
+
+                        </div>
+
+
+
+                        <!-- ТЕЛЕФОН -->
+
+                        <div class="form-group">
+
+                            <label for="{{ form.phone.id_for_label }}">
+                                Телефон
+                            </label>
+
+                            {{ form.phone }}
+
+                            {{ form.phone.errors }}
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- АДРЕС -->
+
+                    <div id="address-fields">
+
+                        <div class="form-group">
+
+                            <label for="{{ form.address.id_for_label }}">
+                                Адрес доставки
+                            </label>
+
+                            {{ form.address }}
+
+                            {{ form.address.errors }}
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="{{ form.entrance.id_for_label }}">
+                                Подъезд, этаж, квартира
+                            </label>
+
+                            {{ form.entrance }}
+
+                            {{ form.entrance.errors }}
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- КОММЕНТАРИЙ -->
+
+                    <div class="form-group">
+
+                        <label for="{{ form.comment.id_for_label }}">
+                            Комментарий
+                        </label>
+
+                        {{ form.comment }}
+
+                        {{ form.comment.errors }}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ============================== -->
+            <!-- 03. ОПЛАТА -->
+            <!-- ============================== -->
+
+            <div class="checkout-block">
+
+                <span class="block-number">
+                    03
+                </span>
+
+                <div class="block-content">
+
+                    <h2>
+                        Оплата и бонусы
+                    </h2>
+
+
+                    <div class="choice-cards">
+
+                        {% for radio in form.payment_method %}
+
+                            <label class="choice-card">
+
+                                {{ radio.tag }}
+
+                                <span>
+
+                                    <strong>
+                                        {{ radio.choice_label }}
+                                    </strong>
+
+                                    <small>
+
+                                        {% if radio.choice_value == "card" %}
+                                            Visa, Mastercard, Мир
+                                        {% else %}
+                                            Подготовьте точную сумму
+                                        {% endif %}
+
+                                    </small>
+
+                                </span>
+
+                            </label>
+
+                        {% endfor %}
+
+                    </div>
+
+
+
+                    <!-- БОНУСЫ -->
+
+                    <label class="bonus-check">
+
+                        {{ form.use_bonus }}
+
+                        <span>
+
+                            <strong>
+                                Списать до {{ max_bonus }} бонусов
+                            </strong>
+
+                            <small>
+                                На балансе
+                                {{ user.profile.bonus_balance }},
+                                можно оплатить до 30% товаров
+                            </small>
+
+                        </span>
+
+                    </label>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- ============================== -->
+            <!-- КНОПКА ЗАКАЗА -->
+            <!-- ============================== -->
+
+            <button
+                class="button button-primary button-full checkout-submit"
+                type="submit"
+            >
+                Подтвердить заказ →
+            </button>
+
+
+        </form>
+
+    </div>
+
+</section>
+
+
+
+<!-- ===================================================== -->
+<!-- PHONE SCRIPT -->
+<!-- ===================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const phone = document.getElementById("id_phone");
+
+    if (!phone) {
+        return;
+    }
+
+
+    /* ============================================
+       НАСТРОЙКИ
+    ============================================ */
+
+    phone.type = "tel";
+    phone.inputMode = "numeric";
+    phone.autocomplete = "tel";
+
+    phone.placeholder = "+7 (___) ___-__-__";
+
+    phone.maxLength = 18;
+
+
+
+    /* ============================================
+       ПОЛУЧАЕМ ТОЛЬКО ЦИФРЫ
+    ============================================ */
+
+    function getDigits(value) {
+
+        return value.replace(/\D/g, "");
+
+    }
+
+
+
+    /* ============================================
+       ПОСТАВИТЬ КУРСОР В КОНЕЦ
+    ============================================ */
+
+    function cursorToEnd() {
+
+        requestAnimationFrame(function () {
+
+            phone.focus();
+
+            phone.setSelectionRange(
+                phone.value.length,
+                phone.value.length
+            );
+
+        });
+
+    }
+
+
+
+    /* ============================================
+       ФОРМАТИРОВАНИЕ
+    ============================================ */
+
+    function formatPhone(value) {
+
+        let digits = getDigits(value);
+
+
+        if (!digits) {
+            return "";
+        }
+
+
+        /*
+         * 8 912 345 67 89
+         *
+         * превращаем в
+         *
+         * 7 912 345 67 89
+         */
+
+        if (digits.startsWith("8")) {
+
+            digits = "7" + digits.substring(1);
+
+        }
+
+
+        /*
+         * Если пользователь ввёл
+         * 9123456789 без 7.
+         */
+
+        if (
+            digits.length === 10 &&
+            digits.startsWith("9")
+        ) {
+
+            digits = "7" + digits;
+
+        }
+
+
+        /*
+         * Если номер начинается не с 7,
+         * добавляем 7.
+         */
+
+        if (!digits.startsWith("7")) {
+
+            digits = "7" + digits;
+
+        }
+
+
+        /*
+         * Максимум 11 цифр:
+         *
+         * 7 + 10 цифр.
+         */
+
+        digits = digits.substring(0, 11);
+
+
+        let result = "+7";
+
+
+        /*
+         * Код оператора.
+         */
+
+        if (digits.length > 1) {
+
+            result += " (";
+
+            result += digits.substring(1, 4);
+
+        }
+
+
+        /*
+         * Закрываем скобку.
+         */
+
+        if (digits.length >= 4) {
+
+            result += ") ";
+
+            result += digits.substring(4, 7);
+
+        }
+
+
+        /*
+         * Первое тире.
+         */
+
+        if (digits.length >= 7) {
+
+            result += "-";
+
+            result += digits.substring(7, 9);
+
+        }
+
+
+        /*
+         * Второе тире.
+         */
+
+        if (digits.length >= 9) {
+
+            result += "-";
+
+            result += digits.substring(9, 11);
+
+        }
+
+
+        return result;
+
+    }
+
+
+
+    /* ============================================
+       FOCUS
+    ============================================ */
+
+    phone.addEventListener("focus", function () {
+
+        /*
+         * Если поле пустое —
+         * сразу вставляем реальный +7.
+         */
+
+        if (!this.value) {
+
+            this.value = "+7";
+
+        }
+
+
+        /*
+         * ВАЖНО:
+         *
+         * курсор ставится ПОСЛЕ +7.
+         */
+
+        requestAnimationFrame(function () {
+
+            phone.setSelectionRange(
+                phone.value.length,
+                phone.value.length
+            );
+
+        });
+
+    });
+
+
+
+    /* ============================================
+       CLICK
+    ============================================ */
+
+    phone.addEventListener("click", function () {
+
+        /*
+         * Если кликнули перед +7,
+         * возвращаем курсор в конец.
+         */
+
+        if (this.selectionStart < 2) {
+
+            requestAnimationFrame(function () {
+
+                phone.setSelectionRange(
+                    phone.value.length,
+                    phone.value.length
+                );
+
+            });
+
+        }
+
+    });
+
+
+
+    /* ============================================
+       INPUT
+    ============================================ */
+
+    phone.addEventListener("input", function () {
+
+        let digits = getDigits(this.value);
+
+
+        /*
+         * Если пользователь удалил всё.
+         */
+
+        if (!digits) {
+
+            this.value = "";
+
+            return;
+
+        }
+
+
+        /*
+         * Если осталось только 7,
+         * показываем +7.
+         */
+
+        if (digits === "7") {
+
+            this.value = "+7";
+
+            cursorToEnd();
+
+            return;
+
+        }
+
+
+        /*
+         * Обычное форматирование.
+         */
+
+        this.value = formatPhone(digits);
+
+        cursorToEnd();
+
+    });
+
+
+
+    /* ============================================
+       BACKSPACE
+    ============================================ */
+
+    phone.addEventListener("keydown", function (event) {
+
+        if (event.key !== "Backspace") {
+            return;
+        }
+
+
+        /*
+         * Если выделен текст —
+         * разрешаем стандартное удаление.
+         */
+
+        if (
+            this.selectionStart !==
+            this.selectionEnd
+        ) {
+
+            return;
+
+        }
+
+
+        let digits = getDigits(this.value);
+
+
+        /*
+         * Пустое поле.
+         */
+
+        if (!digits) {
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        /*
+         * Если сейчас:
+         *
+         * +7
+         *
+         * Backspace должен полностью
+         * очистить поле.
+         */
+
+        if (digits === "7") {
+
+            this.value = "";
+
+            return;
+
+        }
+
+
+        /*
+         * Удаляем последнюю цифру.
+         */
+
+        digits = digits.substring(
+            0,
+            digits.length - 1
+        );
+
+
+        /*
+         * Если осталась только 7,
+         * очищаем поле.
+         */
+
+        if (
+            digits === "" ||
+            digits === "7"
+        ) {
+
+            this.value = "";
+
+            return;
+
+        }
+
+
+        /*
+         * Переформатируем.
+         */
+
+        this.value = formatPhone(digits);
+
+        cursorToEnd();
+
+    });
+
+
+
+    /* ============================================
+       DELETE
+    ============================================ */
+
+    phone.addEventListener("keydown", function (event) {
+
+        if (event.key !== "Delete") {
+            return;
+        }
+
+
+        /*
+         * Если курсор находится внутри +7,
+         * не позволяем удалить + или 7.
+         */
+
+        if (
+            this.selectionStart < 2 &&
+            this.selectionEnd < 2
+        ) {
+
+            event.preventDefault();
+
+            cursorToEnd();
+
+        }
+
+    });
+
+
+
+    /* ============================================
+       PASTE
+    ============================================ */
+
+    phone.addEventListener("paste", function () {
+
+        setTimeout(function () {
+
+            let digits = getDigits(phone.value);
+
+
+            if (!digits) {
+
+                phone.value = "";
+
+                return;
+
+            }
+
+
+            /*
+             * 8XXXXXXXXXX
+             */
+
+            if (
+                digits.startsWith("8") &&
+                digits.length === 11
+            ) {
+
+                digits =
+                    "7" +
+                    digits.substring(1);
+
+            }
+
+
+            /*
+             * 9123456789
+             */
+
+            if (
+                digits.length === 10 &&
+                digits.startsWith("9")
+            ) {
+
+                digits = "7" + digits;
+
+            }
+
+
+            phone.value = formatPhone(digits);
+
+            cursorToEnd();
+
+        }, 0);
+
+    });
+
+
+
+    /* ============================================
+       ЗАПРЕЩАЕМ БУКВЫ
+    ============================================ */
+
+    phone.addEventListener("keypress", function (event) {
+
+        /*
+         * Ctrl / Cmd комбинации разрешаем.
+         */
+
+        if (
+            event.ctrlKey ||
+            event.metaKey ||
+            event.altKey
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * Цифры.
+         */
+
+        if (
+            event.key >= "0" &&
+            event.key <= "9"
+        ) {
+
+            return;
+
+        }
+
+
+        /*
+         * Tab / Enter.
+         */
+
+        if (
+            event.key === "Tab" ||
+            event.key === "Enter"
+        ) {
+
+            return;
+
+        }
+
+
+        event.preventDefault();
+
+    });
+
+
+
+    /* ============================================
+       ЕСЛИ DJANGO УЖЕ ПЕРЕДАЛ НОМЕР
+    ============================================ */
+
+    if (phone.value) {
+
+        const digits = getDigits(phone.value);
+
+        phone.value = formatPhone(digits);
+
+    }
+
+});
+
+</script>
+
+
+{% endblock %}

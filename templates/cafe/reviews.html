@@ -8,6 +8,12 @@
 
 <h1>Отзывы</h1>
 
-<p>Здесь будут отзывы наших гостей ☕</p>
+{% if reviews %}
+{% for review in reviews %}
+{% include "cafe/_review_card.html" %}
+{% endfor %}
+{% else %}
+<p>Пока нет опубликованных отзывов ☕</p>
+{% endif %}
 
 {% endblock %}

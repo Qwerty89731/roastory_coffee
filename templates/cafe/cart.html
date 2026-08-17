@@ -1,8 +1,315 @@
 {% extends "base.html" %}
 
+{% block title %}
+    Корзина — Roastory
+{% endblock %}
+
 {% block content %}
 
-<h1>Корзина</h1>
-<p>Ваша корзина пуста</p>
+<section class="page-hero compact">
+    <div class="container">
+        <span class="kicker">
+            Ваш заказ
+        </span>
+
+        <h1>
+            Корзина
+        </h1>
+    </div>
+</section>
+
+<section class="section cart-page">
+    <div class="container">
+
+        {% if cart_items %}
+
+            <div class="cart-layout">
+
+                <div class="cart-list">
+
+                    {% for item in cart_items %}
+
+                        <article class="cart-item">
+
+                            <div
+                                class="cart-thumb"
+                                style="--accent: {{ item.product.accent }}"
+                            >
+                                {% if item.product.image %}
+                                    <img
+                                        src="{{ item.product.image.url }}"
+                                        alt="{{ item.product.name }}"
+                                        width="90"
+                                        height="90"
+                                    >
+                                {% else %}
+                                    {{ item.product.emoji }}
+                                {% endif %}
+                            </div>
+
+                            <div class="cart-info">
+                                <span>
+                                    {{ item.product.category.name }}
+                                </span>
+
+                                <h3>
+                                    {{ item.product.name }}
+                                </h3>
+
+                                <small>
+                                    {{ item.product.volume }}
+                                </small>
+                            </div>
+
+                            <form
+                                class="quantity"
+                                method="post"
+                                action="{% url 'cart_update' item.product.id %}"
+                                data-cart-form
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    name="quantity"
+                                    value="{{ item.quantity|add:'-1' }}"
+                                    aria-label="Уменьшить количество"
+                                >
+                                    −
+                                </button>
+
+                                <strong data-quantity>
+                                    {{ item.quantity }}
+                                </strong>
+
+                                <button
+                                    type="submit"
+                                    name="quantity"
+                                    value="{{ item.quantity|add:'1' }}"
+                                    aria-label="Увеличить количество"
+                                >
+                                    +
+                                </button>
+                            </form>
+
+                            <strong class="line-price">
+                                {{ item.total|floatformat:0 }} ₽
+                            </strong>
+
+                            <form
+                                method="post"
+                                action="{% url 'cart_remove' item.product.id %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    class="remove"
+                                    type="submit"
+                                    aria-label="Удалить {{ item.product.name }}"
+                                >
+                                    ×
+                                </button>
+                            </form>
+
+                        </article>
+
+                    {% endfor %}
+
+                    <a
+                        class="text-link"
+                        href="{% url 'menu' %}"
+                    >
+                        ← Добавить что-нибудь ещё
+                    </a>
+
+                </div>
+
+                <aside class="order-summary">
+
+                    <h2>
+                        Ваш заказ
+                    </h2>
+
+                    <div>
+                        <span>
+                            Товары
+                        </span>
+
+                        <strong>
+                            {{ subtotal|floatformat:0 }} ₽
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>
+                            Доставка
+                        </span>
+
+                        <strong>
+                            {% if delivery_cost %}
+                                {{ delivery_cost }} ₽
+                            {% else %}
+                                бесплатно
+                            {% endif %}
+                        </strong>
+                    </div>
+
+                    {% if delivery_cost %}
+
+                        <div class="progress-note">
+
+                            <span
+                                style="width: {% widthratio subtotal 1500 100 %}%"
+                            ></span>
+
+                            <small>
+                                До бесплатной доставки ещё
+                                {{ free_delivery_left|floatformat:0 }} ₽.
+                            </small>
+
+                        </div>
+
+                    {% endif %}
+
+                    <div class="summary-total">
+
+                        <span>
+                            Итого
+                        </span>
+
+                        <strong>
+                            {{ subtotal|add:delivery_cost|floatformat:0 }} ₽
+                        </strong>
+
+                    </div>
+
+                    <a
+                        class="button button-primary button-full"
+                        href="{% url 'checkout' %}"
+                    >
+                        Оформить заказ →
+                    </a>
+
+                    <small class="safe-note">
+                        🔒 Оплата при получении
+                    </small>
+
+                </aside>
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <span>
+                    ☕
+                </span>
+
+                <h2>
+                    Корзина пока пуста
+                </h2>
+
+                <p>
+                    Начните с ароматной классики
+                    или попробуйте сезонные напитки.
+                </p>
+
+                <a
+                    class="button button-primary"
+                    href="{% url 'menu' %}"
+                >
+                    Перейти в меню
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const forms = document.querySelectorAll("[data-cart-form]");
+
+    forms.forEach(function (form) {
+
+        form.addEventListener("submit", async function (event) {
+
+            event.preventDefault();
+
+            const button = event.submitter;
+
+            if (!button) {
+                return;
+            }
+
+            const scrollPosition = window.scrollY;
+
+            const formData = new FormData(form);
+            formData.set("quantity", button.value);
+
+            button.disabled = true;
+
+            try {
+
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error("Ошибка обновления корзины");
+                }
+
+                /*
+                 * Django всё равно вернёт страницу корзины.
+                 * Перезагружаем её, но возвращаем пользователя
+                 * ровно на прежнее место.
+                 */
+
+                sessionStorage.setItem(
+                    "cartScrollPosition",
+                    scrollPosition
+                );
+
+                window.location.reload();
+
+            } catch (error) {
+
+                console.error(error);
+
+                button.disabled = false;
+
+            }
+
+        });
+
+    });
+
+    const savedPosition = sessionStorage.getItem(
+        "cartScrollPosition"
+    );
+
+    if (savedPosition !== null) {
+
+        sessionStorage.removeItem(
+            "cartScrollPosition"
+        );
+
+        window.scrollTo({
+            top: Number(savedPosition),
+            behavior: "instant"
+        });
+
+    }
+
+});
+</script>
 
 {% endblock %}

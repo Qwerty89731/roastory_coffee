@@ -1,0 +1,116 @@
+<article class="product-card">
+
+    <div
+        class="product-art"
+        style="--accent: {{ product.accent }}"
+    >
+
+        {% if product.image %}
+
+            <img
+                class="product-photo"
+                src="{{ product.image.url }}"
+                alt="{{ product.name }}"
+                width="900"
+                height="900"
+                loading="lazy"
+            >
+
+        {% else %}
+
+            <span
+                class="product-emoji"
+                aria-hidden="true"
+            >
+                {{ product.emoji }}
+            </span>
+
+            <span class="art-shadow"></span>
+
+        {% endif %}
+
+
+        {% if product.is_featured %}
+
+            <span class="product-badge">
+                Выбор гостей
+            </span>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="product-content">
+
+        <div class="product-top">
+
+            <div>
+
+                <span class="eyebrow">
+                    {{ product.category.name }}
+                </span>
+
+                <h3>
+                    {{ product.name }}
+                </h3>
+
+            </div>
+
+
+            {% if product.volume %}
+
+                <span class="volume">
+                    {{ product.volume }}
+                </span>
+
+            {% endif %}
+
+        </div>
+
+
+        <p>
+            {{ product.description }}
+        </p>
+
+
+        <div class="product-bottom">
+
+            <strong>
+                {{ product.price|floatformat:0 }} ₽
+            </strong>
+
+            <form
+                method="post"
+                action="{% url 'cart_add' product.id %}"
+            >
+
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="next"
+                    value="{{ request.get_full_path }}"
+                >
+
+                <button
+                    class="add-to-cart"
+                    type="submit"
+                    aria-label="Добавить {{ product.name }} в корзину"
+                >
+
+                    <span aria-hidden="true">
+                        +
+                    </span>
+
+                    В корзину
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</article>

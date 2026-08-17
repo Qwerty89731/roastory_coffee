@@ -12,7 +12,7 @@ class Profile(models.Model):
     """
 
     user = models.OneToOneField(
-            User,
+        User,
         on_delete=models.CASCADE,
         related_name="profile",
     )
@@ -44,7 +44,7 @@ class Profile(models.Model):
 
 class Category(models.Model):
     """
-    Категория меню: кофе, выпечка, завтраки и т. д.
+    Категория меню.
     """
 
     name = models.CharField(
@@ -63,7 +63,10 @@ class Category(models.Model):
     )
 
     class Meta:
-        ordering = ("order", "name")
+        ordering = (
+            "order",
+            "name",
+        )
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
@@ -104,11 +107,22 @@ class Product(models.Model):
     )
 
     volume = models.CharField(
-        "Объём или вес",
+        "Объём / вес",
         max_length=30,
         blank=True,
     )
-    
+
+    image = models.ImageField(
+        "Фотография",
+        upload_to="products/",
+        default="products/default.webp",
+        blank=True,
+        help_text=(
+            "Лучше использовать квадратное фото "
+            "размером от 900 × 900 px."
+        ),
+    )
+
     emoji = models.CharField(
         "Эмодзи",
         max_length=8,
@@ -122,7 +136,7 @@ class Product(models.Model):
     )
 
     is_featured = models.BooleanField(
-        "Показывать на главной",
+        "На главной",
         default=False,
     )
 
@@ -132,7 +146,9 @@ class Product(models.Model):
     )
 
     class Meta:
-        ordering = ("category__order", "name")
+        ordering = (
+            "name",
+        )
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
 
@@ -156,7 +172,6 @@ class Order(models.Model):
         DELIVERY = "delivery", "Доставка"
         PICKUP = "pickup", "Самовывоз"
 
-    
     class Payment(models.TextChoices):
         CARD = "card", "Картой при получении"
         CASH = "cash", "Наличными"
@@ -248,11 +263,17 @@ class Order(models.Model):
         auto_now_add=True,
     )
 
+    updated_at = models.DateTimeField(
+        "Обновлён",
+        auto_now=True,
+    )
+
     class Meta:
-        ordering = ("-created_at",)
+        ordering = (
+            "-created_at",
+        )
         verbose_name = "Заказ"
         verbose_name_plural = "Заказы"
-
 
     def __str__(self):
         return f"Заказ №{self.pk}"
@@ -272,6 +293,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(
         Product,
         on_delete=models.PROTECT,
+        related_name="order_items",
     )
 
     name = models.CharField(
@@ -313,6 +335,7 @@ class BonusTransaction(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
+        related_name="bonus_transactions",
     )
 
     amount = models.IntegerField(
@@ -330,7 +353,9 @@ class BonusTransaction(models.Model):
     )
 
     class Meta:
-        ordering = ("-created_at",)
+        ordering = (
+            "-created_at",
+        )
         verbose_name = "Бонусная операция"
         verbose_name_plural = "Бонусные операции"
 
@@ -373,7 +398,9 @@ class Review(models.Model):
     )
 
     class Meta:
-        ordering = ("-created_at",)
+        ordering = (
+            "-created_at",
+        )
         verbose_name = "Отзыв"
         verbose_name_plural = "Отзывы"
 
@@ -382,6 +409,4 @@ class Review(models.Model):
             f"Отзыв {self.user.username}: "
             f"{self.rating}/5"
         )
-
-
 

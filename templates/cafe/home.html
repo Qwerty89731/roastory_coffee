@@ -1,25 +1,395 @@
 {% extends "base.html" %}
 
-{% load static %}
+{% block title %}
+Roastory — кофе с историей
+{% endblock title %}
 
 {% block content %}
 
-<div class="container">
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="kicker">Спешелти-кофе · своя пекарня</span>
 
-    <div class="welcome">
-        <h1>Roastory работает ☕</h1>
-        <p>Добро пожаловать в нашу кофейню</p>
-        <button>Посмотреть меню</button>
+      <h1>
+        Утро начинается<br />
+        <em>с хорошей истории</em>
+      </h1>
+
+      <p>
+        Спешелти-кофе, честная еда и выпечка из собственной пекарни. Приготовим
+        с собой или привезём к вашей двери.
+      </p>
+
+      <div class="hero-actions">
+        <a class="button button-primary" href="{% url 'menu' %}">
+          Открыть меню <span>→</span>
+        </a>
+
+        <a class="text-link" href="#about"> Почему Roastory ↓ </a>
+      </div>
+
+      <div class="hero-facts">
+        <div>
+          <strong>4,9</strong>
+          <span>рейтинг гостей</span>
+        </div>
+
+        <div>
+          <strong>15 мин</strong>
+          <span>среднее ожидание</span>
+        </div>
+
+        <div>
+          <strong>5%</strong>
+          <span>вернём бонусами</span>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-        <h2>О нас</h2>
-        <p>
-            Мы готовим ароматный кофе из лучших зёрен.
-            У нас уютная атмосфера и свежая выпечка.
-        </p>
+    <div class="hero-visual" aria-label="Чашка свежего кофе">
+      <span class="visual-label visual-label-top"> 100% арабика </span>
+
+      <span class="visual-label visual-label-bottom"> обжарено с заботой </span>
+
+      <div class="bean bean-one">◆</div>
+      <div class="bean bean-two">◆</div>
+
+      <div class="steam steam-one"></div>
+      <div class="steam steam-two"></div>
+
+      <div class="saucer"></div>
+
+      <div class="cup">
+        <div class="coffee">
+          <span>R</span>
+        </div>
+
+        <div class="handle"></div>
+      </div>
+
+      <div class="note-card">
+        <span>Сегодня в воронке</span>
+        <strong>Эфиопия · Иргачеффе</strong>
+        <small>персик · жасмин · мёд</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="marquee">
+    <div>
+      СВЕЖАЯ ОБЖАРКА <i>✦</i> СВОЯ ПЕКАРНЯ <i>✦</i> ДОСТАВКА ЗА 45 МИНУТ
+      <i>✦</i> 5% БОНУСАМИ <i>✦</i> СВЕЖАЯ ОБЖАРКА <i>✦</i>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="menu-preview">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="kicker">Любимое в Roastory</span>
+        <h2>Собрали лучшее</h2>
+      </div>
+
+      <a class="text-link" href="{% url 'menu' %}"> Смотреть всё меню → </a>
     </div>
 
+   <div class="product-grid">
+  {% for product in featured %}
+    {% include "cafe/_product_card.html" %}
+  {% empty %}
+    <p>Скоро здесь появятся любимые напитки.</p>
+  {% endfor %}
 </div>
+</section>
+
+<section class="story section" id="about">
+  <div class="container story-grid">
+    <div class="story-visual">
+      <div class="roaster">
+        ☕
+        <span>small batch</span>
+      </div>
+
+      <div class="story-label">
+        <strong>08</strong>
+        <span>
+          лет обжариваем<br />
+          с любовью
+        </span>
+      </div>
+    </div>
+
+    <div class="story-copy">
+      <span class="kicker">Не просто кофейня</span>
+
+      <h2>Знаем путь каждого зерна</h2>
+
+      <p>
+        Покупаем кофе напрямую у фермеров, обжариваем небольшими партиями и
+        настраиваем рецепт каждый день. Так в вашей чашке остаётся самое важное
+        — чистый и объёмный вкус.
+      </p>
+
+      <ul class="check-list">
+        <li>
+          <span>✓</span>
+
+          <div>
+            <strong>Свежая обжарка</strong>
+            <small>Не позднее 21 дня до вашей чашки</small>
+          </div>
+        </li>
+
+        <li>
+          <span>✓</span>
+
+          <div>
+            <strong>Ответственный выбор</strong>
+            <small> Прослеживаемое зерно и честная цена фермерам </small>
+          </div>
+        </li>
+
+        <li>
+          <span>✓</span>
+
+          <div>
+            <strong>Без компромиссов</strong>
+            <small>Растительное молоко без доплаты</small>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="loyalty section">
+  <div class="container loyalty-card">
+    <div class="loyalty-copy">
+      <span class="kicker kicker-light"> Roastory club </span>
+
+      <h2>
+        Каждая чашка<br />
+        приближает следующую
+      </h2>
+
+      <p>
+        Получайте 5% бонусами с каждого заказа и оплачивайте ими до 30% покупки.
+      </p>
+
+      <div>
+        {% if user.is_authenticated %}
+
+        <a class="button button-cream" href="{% url 'profile' %}">
+          Мои {{ user.profile.bonus_balance }} бонусов →
+        </a>
+
+        {% else %}
+
+        <a class="button button-cream" href="{% url 'signup' %}">
+          Получить 300 бонусов →
+        </a>
+
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="loyalty-ticket">
+      <span class="ticket-brand"> ROASTORY CLUB </span>
+
+      <span class="ticket-cup"> ☕ </span>
+
+      <div>
+        <small>БОНУСНЫЙ БАЛАНС</small>
+
+        <strong>
+          {% if user.is_authenticated %} {{ user.profile.bonus_balance }} {%
+          else %} 300 {% endif %}
+        </strong>
+
+        <span>1 бонус = 1 ₽</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================
+     DELIVERY
+     ========================================================= -->
+
+<section class="delivery section" id="delivery">
+  <div class="container">
+    <div class="delivery-head">
+      <div>
+        <span class="kicker"> Тепло. Быстро. Бережно. </span>
+
+        <h2>
+          Доставим, как<br />
+          <em>в кофейне</em>
+        </h2>
+      </div>
+
+      <div class="delivery-promise">
+        <span class="delivery-promise-icon"> ✦ </span>
+
+        <div>
+          <strong>До 45 минут</strong>
+          <small>от Roastory до вашей двери</small>
+        </div>
+      </div>
+    </div>
+
+    <div class="delivery-card">
+      <!-- КАРТА -->
+
+      <div class="delivery-map">
+        <div class="map-grid"></div>
+
+        <span class="map-road road-one"></span>
+        <span class="map-road road-two"></span>
+        <span class="map-road road-three"></span>
+
+        <span class="map-area area-one"> CITY </span>
+
+        <span class="map-area area-two"> CENTER </span>
+
+        <span class="map-area area-three"> ROASTORY </span>
+
+        <div class="delivery-route">
+          <span class="route-line"></span>
+
+          <div class="map-location map-location-cafe">
+            <span class="location-pulse"></span>
+
+            <span class="location-pin"> R </span>
+
+            <div class="location-label">
+              <strong>Roastory</strong>
+              <small>кофе уже готовят</small>
+            </div>
+          </div>
+
+          <div class="map-location map-location-home">
+            <span class="location-pin home-pin"> ⌂ </span>
+
+            <div class="location-label">
+              <strong>Ваша дверь</strong>
+              <small>встречаемся здесь</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="map-badge">
+          <span>↗</span>
+
+          <div>
+            <strong>Ваш заказ</strong>
+            <small>уже едет к вам</small>
+          </div>
+        </div>
+
+        <div class="map-coffee">☕</div>
+      </div>
+
+      <!-- ИНФОРМАЦИЯ -->
+
+      <div class="delivery-content">
+        <div class="delivery-intro">
+          <span class="delivery-number"> 01—03 </span>
+
+          <p>
+            Заказ собирается бережно, как если бы вы забирали его прямо с нашей
+            стойки.
+          </p>
+        </div>
+
+        <div class="delivery-steps">
+          <div class="delivery-step">
+            <div class="step-number">01</div>
+
+            <div class="step-line"></div>
+
+            <div class="step-content">
+              <h3>Вы выбираете</h3>
+
+              <p>Соберите любимый кофе, выпечку и всё, что захочется.</p>
+            </div>
+          </div>
+
+          <div class="delivery-step">
+            <div class="step-number">02</div>
+
+            <div class="step-line"></div>
+
+            <div class="step-content">
+              <h3>Мы готовим</h3>
+
+              <p>Бариста начинает готовить заказ сразу после подтверждения.</p>
+            </div>
+          </div>
+<div class="delivery-step">
+  <div class="step-number">03</div>
+
+  <div class="step-line"></div>
+
+  <div class="step-content">
+    <h3>Курьер уже в пути</h3>
+    <p>Привезём аккуратно и бесплатно при заказе от 1 500 ₽.</p>
+  </div>
+</div>
+        
+
+        <div class="delivery-bottom">
+          <div class="delivery-price">
+            <span> Доставка </span>
+
+            <strong> 199 ₽ </strong>
+
+            <small> бесплатно от 1 500 ₽ </small>
+          </div>
+
+          <a class="button button-primary" href="{% url 'menu' %}">
+            Заказать доставку <span>→</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="reviews-section section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="kicker"> Говорят гости </span>
+
+        <h2>Кофе объединяет</h2>
+      </div>
+
+      <div class="rating-big">
+        <strong> {{ rating|floatformat:1 }} </strong>
+
+        <span>
+          ★★★★★
+          <small>средняя оценка</small>
+        </span>
+      </div>
+    </div>
+<div class="reviews-grid">
+  {% for review in reviews %}
+    {% include "cafe/_review_card.html" %}
+  {% empty %}
+    <p>Будьте первым, кто поделится впечатлением.</p>
+  {% endfor %}
+</div>
+
+    <div class="center">
+      <a class="button button-outline" href="{% url 'reviews' %}">
+        Все отзывы →
+      </a>
+    </div>
+  </div>
+</section>
 
 {% endblock %}
