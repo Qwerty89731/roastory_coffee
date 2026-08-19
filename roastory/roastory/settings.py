@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-jl-*o+x=_qh=z4k_pv7q(8exa(539@z68i#w)i2cx=_^!*u0w(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['roastory-coffee-el1j0.faable.link', 'localhost', '127.0.0.1']
 
 
 # Application definition
